@@ -1,0 +1,48 @@
+[project]
+name = "silverforge"
+version = "0.1.0"
+description = "PDF를 구조화된 Markdown으로 변환 - Upstage Document Parse 기반"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "Harrison Kim"}
+]
+keywords = ["pdf", "markdown", "document-parsing", "upstage", "llm", "data-pipeline"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "requests>=2.31.0",
+    "python-dotenv>=1.0.0",
+    "langchain-upstage>=0.1.0",
+    "jiwer>=3.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "ruff>=0.1.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["silverforge"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+ignore = ["E501"]
