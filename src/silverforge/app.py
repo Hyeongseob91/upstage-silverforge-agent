@@ -60,6 +60,23 @@ def inject_custom_css():
             max-width: 100%;
         }
 
+        /* Main content columns - equal height */
+        [data-testid="stHorizontalBlock"] {
+            align-items: stretch !important;
+        }
+        [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+        [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] > [data-testid="stVerticalBlock"] {
+            flex: 1;
+            background: rgba(55, 53, 47, 0.02);
+            border: 1px solid rgba(55, 53, 47, 0.09);
+            border-radius: 4px;
+            padding: 16px;
+        }
+
         /* Typography - Notion style */
         h1, h2, h3, h4, h5, h6 {
             color: rgb(55, 53, 47) !important;
