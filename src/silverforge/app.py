@@ -645,11 +645,10 @@ def render_pending_list():
         st.markdown(
             """
             <div style="text-align: center; padding: 40px 20px; color: rgba(55, 53, 47, 0.4);
-                        background: rgba(55, 53, 47, 0.03); border-radius: 4px; min-height: 120px;
+                        background: rgba(55, 53, 47, 0.03); border-radius: 4px; height: 150px;
                         display: flex; flex-direction: column; justify-content: center;">
                 <p style="font-size: 24px; margin-bottom: 8px;">📄</p>
                 <p style="font-size: 14px; margin: 0;">대기 중인 파일이 없습니다</p>
-                <p style="font-size: 12px; margin-top: 4px;">사이드바에서 PDF를 업로드하세요</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -717,7 +716,7 @@ def render_results_panel():
         st.markdown(
             """
             <div style="text-align: center; padding: 40px 20px; color: rgba(55, 53, 47, 0.4);
-                        background: rgba(55, 53, 47, 0.03); border-radius: 4px; min-height: 120px;
+                        background: rgba(55, 53, 47, 0.03); border-radius: 4px; height: 150px;
                         display: flex; flex-direction: column; justify-content: center;">
                 <p style="font-size: 24px; margin-bottom: 8px;">✨</p>
                 <p style="font-size: 14px; margin: 0;">변환 결과가 없습니다</p>
