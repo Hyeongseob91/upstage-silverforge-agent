@@ -17,19 +17,24 @@ import zipfile
 from datetime import datetime
 from pathlib import Path
 
+# Setup path for Streamlit Cloud deployment
+_THIS_DIR = Path(__file__).parent.resolve()
+_SRC_DIR = _THIS_DIR.parent
+_PROJECT_ROOT = _SRC_DIR.parent
+
+# Add both src/ and src/silverforge/ to path
+if str(_SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(_SRC_DIR))
+if str(_THIS_DIR) not in sys.path:
+    sys.path.insert(0, str(_THIS_DIR))
+
 import streamlit as st
 import plotly.graph_objects as go
 
-# Handle both direct execution and package import
-try:
-    from .core import process
-    from .curator import curate
-    from . import database as db
-except ImportError:
-    sys.path.insert(0, str(Path(__file__).parent.parent))
-    from silverforge.core import process
-    from silverforge.curator import curate
-    from silverforge import database as db
+# Import modules directly (not as package)
+from core import process
+from curator import curate
+import database as db
 
 
 def inject_custom_css():
