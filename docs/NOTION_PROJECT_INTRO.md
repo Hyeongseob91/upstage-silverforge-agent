@@ -11,7 +11,7 @@
 | 프로젝트명 | SilverForge |
 | 한 줄 소개 | PDF → 구조화된 Markdown 변환 도구 |
 | 라이브 데모 | [https://silverforge.streamlit.app](https://silverforge.streamlit.app) |
-| GitHub | [Repository Link] |
+| GitHub | [https://github.com/Hyeongseob91/upstage-silverforge-agent](https://github.com/Hyeongseob91/upstage-silverforge-agent) |
 | 개발 기간 | 2026년 1월 |
 | 소속 | Upstage Ambassador Season 2 |
 
@@ -190,5 +190,5 @@ silverforge/
 ## 링크
 
 - **라이브 데모**: [https://silverforge.streamlit.app](https://silverforge.streamlit.app)
-- **GitHub**: [Repository URL]
+- **GitHub**: [https://github.com/Hyeongseob91/upstage-silverforge-agent](https://github.com/Hyeongseob91/upstage-silverforge-agent)
 - **Upstage Console**: [https://console.upstage.ai](https://console.upstage.ai)
