@@ -175,6 +175,20 @@ def render_auth_page():
             color: rgb(55, 53, 47) !important;
             border-bottom: 2px solid rgb(55, 53, 47);
         }
+
+        /* Consistent input width */
+        .stTextInput {
+            width: 100% !important;
+        }
+        .stTextInput > div {
+            width: 100% !important;
+        }
+        .stTextInput > div > div {
+            width: 100% !important;
+        }
+        .stTextInput > div > div > input {
+            width: 100% !important;
+        }
         </style>
         """,
         unsafe_allow_html=True,
@@ -204,17 +218,6 @@ def render_auth_page():
             unsafe_allow_html=True,
         )
 
-        # Auth card with subtle shadow
-        st.markdown(
-            """
-            <div style="background: white; border-radius: 8px; padding: 24px;
-                        box-shadow: rgba(15, 15, 15, 0.05) 0px 0px 0px 1px,
-                                    rgba(15, 15, 15, 0.1) 0px 3px 6px,
-                                    rgba(15, 15, 15, 0.2) 0px 9px 24px;">
-            """,
-            unsafe_allow_html=True,
-        )
-
         if not db.is_configured():
             st.markdown(
                 """
@@ -228,7 +231,6 @@ def render_auth_page():
             if st.button("게스트로 계속하기", type="primary", use_container_width=True):
                 st.session_state.user = {"id": "guest", "email": "guest@local"}
                 st.rerun()
-            st.markdown("</div>", unsafe_allow_html=True)
             return
 
         tab1, tab2 = st.tabs(["로그인", "회원가입"])
@@ -347,7 +349,6 @@ def render_auth_page():
                       margin-top: 12px;">
                 게스트 모드에서는 데이터가 저장되지 않습니다
             </p>
-            </div>
             """,
             unsafe_allow_html=True,
         )
