@@ -174,6 +174,10 @@ def render_auth_page():
             width: 100% !important;
         }
 
+        /* Hide password visibility toggle icon */
+        .stTextInput [data-testid="passwordShowHideButton"] {
+            display: none !important;
+        }
         </style>
         """,
         unsafe_allow_html=True,
