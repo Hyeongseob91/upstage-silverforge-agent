@@ -175,7 +175,15 @@ def render_auth_page():
         }
 
         /* Hide password visibility toggle icon */
-        .stTextInput [data-testid="passwordShowHideButton"] {
+        .stTextInput button {
+            display: none !important;
+        }
+        .stTextInput [data-testid="stTextInputRootElement"] > div:last-child {
+            display: none !important;
+        }
+        input[type="password"] + button,
+        input[type="password"] ~ button,
+        input[type="password"] ~ div > button {
             display: none !important;
         }
         </style>
