@@ -60,25 +60,6 @@ def inject_custom_css():
             max-width: 100%;
         }
 
-        /* Main page content boxes - equal height */
-        .main-content-grid [data-testid="stHorizontalBlock"] {
-            align-items: stretch !important;
-        }
-        .main-content-grid [data-testid="stColumn"] {
-            display: flex !important;
-            flex-direction: column !important;
-        }
-        .main-content-grid [data-testid="stColumn"] > [data-testid="stVerticalBlock"] {
-            flex: 1 !important;
-        }
-        .content-box {
-            background: rgba(55, 53, 47, 0.02);
-            border: 1px solid rgba(55, 53, 47, 0.09);
-            border-radius: 4px;
-            padding: 20px;
-            min-height: 450px;
-            height: 100%;
-        }
 
         /* Typography - Notion style */
         h1, h2, h3, h4, h5, h6 {
@@ -664,7 +645,8 @@ def render_pending_list():
         st.markdown(
             """
             <div style="text-align: center; padding: 40px 20px; color: rgba(55, 53, 47, 0.4);
-                        background: rgba(55, 53, 47, 0.03); border-radius: 4px;">
+                        background: rgba(55, 53, 47, 0.03); border-radius: 4px; min-height: 120px;
+                        display: flex; flex-direction: column; justify-content: center;">
                 <p style="font-size: 24px; margin-bottom: 8px;">📄</p>
                 <p style="font-size: 14px; margin: 0;">대기 중인 파일이 없습니다</p>
                 <p style="font-size: 12px; margin-top: 4px;">사이드바에서 PDF를 업로드하세요</p>
@@ -735,7 +717,8 @@ def render_results_panel():
         st.markdown(
             """
             <div style="text-align: center; padding: 40px 20px; color: rgba(55, 53, 47, 0.4);
-                        background: rgba(55, 53, 47, 0.03); border-radius: 4px;">
+                        background: rgba(55, 53, 47, 0.03); border-radius: 4px; min-height: 120px;
+                        display: flex; flex-direction: column; justify-content: center;">
                 <p style="font-size: 24px; margin-bottom: 8px;">✨</p>
                 <p style="font-size: 14px; margin: 0;">변환 결과가 없습니다</p>
             </div>
@@ -1143,19 +1126,13 @@ def main():
         return
 
     # Main layout
-    st.markdown('<div class="main-content-grid">', unsafe_allow_html=True)
     col_left, col_right = st.columns([1, 1], gap="large")
 
     with col_left:
-        st.markdown('<div class="content-box">', unsafe_allow_html=True)
         render_pending_list()
-        st.markdown('</div>', unsafe_allow_html=True)
 
     with col_right:
-        st.markdown('<div class="content-box">', unsafe_allow_html=True)
         render_results_panel()
-        st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
