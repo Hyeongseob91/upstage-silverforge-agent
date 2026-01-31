@@ -159,23 +159,6 @@ def render_auth_page():
             background-color: #1a9bcd !important;
         }
 
-        /* Clean tabs */
-        .stTabs [data-baseweb="tab-list"] {
-            gap: 0px;
-            border-bottom: 1px solid rgba(55, 53, 47, 0.09);
-        }
-        .stTabs [data-baseweb="tab"] {
-            border-radius: 0;
-            padding: 10px 16px;
-            font-size: 14px;
-            font-weight: 500;
-            color: rgba(55, 53, 47, 0.65);
-        }
-        .stTabs [aria-selected="true"] {
-            color: rgb(55, 53, 47) !important;
-            border-bottom: 2px solid rgb(55, 53, 47);
-        }
-
         /* Consistent input width */
         .stTextInput {
             width: 100% !important;
@@ -233,99 +216,64 @@ def render_auth_page():
                 st.rerun()
             return
 
-        tab1, tab2 = st.tabs(["로그인", "회원가입"])
+        # Email input
+        st.markdown(
+            "<p style='font-size: 12px; color: rgba(55, 53, 47, 0.65); margin-bottom: 4px;'>이메일</p>",
+            unsafe_allow_html=True,
+        )
+        email = st.text_input(
+            "이메일",
+            placeholder="name@company.com",
+            label_visibility="collapsed",
+            key="auth_email",
+        )
 
-        with tab1:
-            with st.form("login_form", clear_on_submit=False):
-                st.markdown(
-                    "<p style='font-size: 12px; color: rgba(55, 53, 47, 0.65); margin-bottom: 4px;'>이메일</p>",
-                    unsafe_allow_html=True,
-                )
-                email = st.text_input(
-                    "이메일",
-                    placeholder="name@company.com",
-                    label_visibility="collapsed",
-                )
+        # Password input
+        st.markdown(
+            "<p style='font-size: 12px; color: rgba(55, 53, 47, 0.65); margin-bottom: 4px; margin-top: 12px;'>비밀번호</p>",
+            unsafe_allow_html=True,
+        )
+        password = st.text_input(
+            "비밀번호",
+            type="password",
+            placeholder="비밀번호 입력",
+            label_visibility="collapsed",
+            key="auth_password",
+        )
 
-                st.markdown(
-                    "<p style='font-size: 12px; color: rgba(55, 53, 47, 0.65); margin-bottom: 4px; margin-top: 12px;'>비밀번호</p>",
-                    unsafe_allow_html=True,
-                )
-                password = st.text_input(
-                    "비밀번호",
-                    type="password",
-                    placeholder="비밀번호 입력",
-                    label_visibility="collapsed",
-                )
+        st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
 
-                st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
+        # Two buttons side by side: Enter | Create Account
+        btn_col1, btn_col2 = st.columns(2)
 
-                if st.form_submit_button("로그인", type="primary", use_container_width=True):
-                    if email and password:
-                        with st.spinner(""):
-                            result = db.sign_in(email, password)
-                        if "error" in result:
-                            st.error(result['error'])
-                        else:
-                            st.session_state.user = result["user"]
-                            st.session_state.access_token = result["session"].access_token
-                            st.rerun()
+        with btn_col1:
+            if st.button("Enter", type="primary", use_container_width=True):
+                if email and password:
+                    with st.spinner(""):
+                        result = db.sign_in(email, password)
+                    if "error" in result:
+                        st.error(result['error'])
                     else:
-                        st.warning("이메일과 비밀번호를 입력하세요")
+                        st.session_state.user = result["user"]
+                        st.session_state.access_token = result["session"].access_token
+                        st.rerun()
+                else:
+                    st.warning("이메일과 비밀번호를 입력하세요")
 
-        with tab2:
-            with st.form("signup_form", clear_on_submit=False):
-                st.markdown(
-                    "<p style='font-size: 12px; color: rgba(55, 53, 47, 0.65); margin-bottom: 4px;'>이메일</p>",
-                    unsafe_allow_html=True,
-                )
-                signup_email = st.text_input(
-                    "이메일",
-                    placeholder="name@company.com",
-                    key="signup_email",
-                    label_visibility="collapsed",
-                )
-
-                st.markdown(
-                    "<p style='font-size: 12px; color: rgba(55, 53, 47, 0.65); margin-bottom: 4px; margin-top: 12px;'>비밀번호</p>",
-                    unsafe_allow_html=True,
-                )
-                signup_password = st.text_input(
-                    "비밀번호",
-                    type="password",
-                    placeholder="6자 이상",
-                    key="signup_pw",
-                    label_visibility="collapsed",
-                )
-
-                st.markdown(
-                    "<p style='font-size: 12px; color: rgba(55, 53, 47, 0.65); margin-bottom: 4px; margin-top: 12px;'>비밀번호 확인</p>",
-                    unsafe_allow_html=True,
-                )
-                password_confirm = st.text_input(
-                    "비밀번호 확인",
-                    type="password",
-                    placeholder="비밀번호 다시 입력",
-                    key="signup_pw2",
-                    label_visibility="collapsed",
-                )
-
-                st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
-
-                if st.form_submit_button("계정 만들기", type="primary", use_container_width=True):
-                    if not signup_email or not signup_password:
-                        st.warning("이메일과 비밀번호를 입력하세요")
-                    elif len(signup_password) < 6:
+        with btn_col2:
+            if st.button("Create Account", use_container_width=True):
+                if email and password:
+                    if len(password) < 6:
                         st.warning("비밀번호는 6자 이상이어야 합니다")
-                    elif signup_password != password_confirm:
-                        st.warning("비밀번호가 일치하지 않습니다")
                     else:
                         with st.spinner(""):
-                            result = db.sign_up(signup_email, signup_password)
+                            result = db.sign_up(email, password)
                         if "error" in result:
                             st.error(result['error'])
                         else:
                             st.success("가입 완료! 이메일을 확인하세요")
+                else:
+                    st.warning("이메일과 비밀번호를 입력하세요")
 
         # Divider
         st.markdown(
