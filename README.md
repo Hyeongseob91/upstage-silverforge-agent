@@ -1,7 +1,7 @@
 # SilverForge
 
 [![한국어](https://img.shields.io/badge/lang-한국어-blue.svg)](README.ko.md)
-[![Streamlit](https://img.shields.io/badge/Streamlit-Live%20Demo-FF4B4B?logo=streamlit)](https://silverforge.streamlit.app)
+[![Streamlit](https://img.shields.io/badge/Streamlit-Live%20Demo-FF4B4B?logo=streamlit)](https://upstage-silverforge-agent-yhuqpaatpux2pebsxntupw.streamlit.app/)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?logo=github)](https://github.com/Hyeongseob91/upstage-silverforge-agent)
 
 **Convert PDF to Structured Markdown** - Ground Truth Data Generation Tool for VLM/SLM Training
@@ -10,7 +10,7 @@
 
 ## Live Demo
 
-**[https://silverforge.streamlit.app](https://silverforge.streamlit.app)**
+**[Upstage-Silverforge-Agent](https://upstage-silverforge-agent-yhuqpaatpux2pebsxntupw.streamlit.app/)**
 
 ## Features
 
