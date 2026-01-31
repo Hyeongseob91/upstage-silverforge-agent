@@ -243,12 +243,20 @@ def render_auth_page():
             width: 100% !important;
         }
 
-        /* Hide password visibility toggle icon - specific selector */
+        /* Hide default password toggle and add custom eye icon */
         [data-testid="stTextInput-RootElement"] button[kind="icon"],
         .stTextInput [data-baseweb="input"] + div button {
             visibility: hidden !important;
             width: 0 !important;
             padding: 0 !important;
+        }
+
+        /* Custom eye icon inside password field */
+        input[type="password"] {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='rgba(55,53,47,0.35)'%3E%3Cpath d='M.2 10a11 11 0 0119.6 0A11 11 0 01.2 10zm9.8 4a4 4 0 100-8 4 4 0 000 8zm0-2a2 2 0 110-4 2 2 0 010 4z'/%3E%3C/svg%3E") !important;
+            background-repeat: no-repeat !important;
+            background-position: right 10px center !important;
+            padding-right: 36px !important;
         }
         </style>
         """,
