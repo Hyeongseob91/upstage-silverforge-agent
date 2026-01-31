@@ -122,126 +122,173 @@ def init_session_state():
 
 
 def render_auth_page():
-    """로그인/회원가입 페이지"""
-    # Hero section
+    """로그인/회원가입 페이지 - Notion Style"""
+    # Notion-style CSS
     st.markdown(
         """
-        <div style="text-align: center; padding: 2rem 0 1rem 0;">
-            <h1 style="font-size: 3.5rem; margin-bottom: 0.5rem;">🔥 SilverForge</h1>
-            <p style="font-size: 1.2rem; color: #6c757d; margin-bottom: 0.5rem;">
-                PDF를 구조화된 Markdown으로 변환
-            </p>
-            <p style="font-size: 0.9rem; color: #adb5bd;">
-                VLM/SLM 학습용 Ground Truth 데이터 생성 도구
-            </p>
-        </div>
+        <style>
+        /* Hide default streamlit elements for cleaner look */
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+        header {visibility: hidden;}
+
+        /* Notion-style form inputs */
+        .stTextInput > div > div > input {
+            border: 1px solid rgba(55, 53, 47, 0.16) !important;
+            border-radius: 4px !important;
+            padding: 8px 10px !important;
+            font-size: 14px !important;
+            transition: border-color 0.2s, box-shadow 0.2s !important;
+        }
+        .stTextInput > div > div > input:focus {
+            border-color: #2eaadc !important;
+            box-shadow: 0 0 0 2px rgba(46, 170, 220, 0.2) !important;
+        }
+
+        /* Notion-style buttons */
+        .stButton > button {
+            border-radius: 4px !important;
+            font-weight: 500 !important;
+            transition: background-color 0.2s !important;
+        }
+        .stButton > button[kind="primary"] {
+            background-color: #2eaadc !important;
+            border: none !important;
+        }
+        .stButton > button[kind="primary"]:hover {
+            background-color: #1a9bcd !important;
+        }
+
+        /* Clean tabs */
+        .stTabs [data-baseweb="tab-list"] {
+            gap: 0px;
+            border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+        }
+        .stTabs [data-baseweb="tab"] {
+            border-radius: 0;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(55, 53, 47, 0.65);
+        }
+        .stTabs [aria-selected="true"] {
+            color: rgb(55, 53, 47) !important;
+            border-bottom: 2px solid rgb(55, 53, 47);
+        }
+        </style>
         """,
         unsafe_allow_html=True,
     )
 
-    # Features
-    st.markdown(
-        """
-        <div style="display: flex; justify-content: center; gap: 2rem; padding: 1.5rem 0; flex-wrap: wrap;">
-            <div style="text-align: center;">
-                <div style="font-size: 1.5rem;">📄</div>
-                <div style="font-size: 0.85rem; color: #6c757d;">PDF 파싱</div>
-            </div>
-            <div style="text-align: center;">
-                <div style="font-size: 1.5rem;">🔍</div>
-                <div style="font-size: 0.85rem; color: #6c757d;">품질 분석</div>
-            </div>
-            <div style="text-align: center;">
-                <div style="font-size: 1.5rem;">📊</div>
-                <div style="font-size: 0.85rem; color: #6c757d;">시각화</div>
-            </div>
-            <div style="text-align: center;">
-                <div style="font-size: 1.5rem;">☁️</div>
-                <div style="font-size: 0.85rem; color: #6c757d;">클라우드 저장</div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    # Spacer
+    st.markdown("<div style='height: 60px;'></div>", unsafe_allow_html=True)
 
-    st.markdown("---")
-
-    if not db.is_configured():
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            st.warning("⚠️ Supabase가 설정되지 않았습니다.")
-            if st.button("🚀 게스트로 시작", type="primary", use_container_width=True):
-                st.session_state.user = {"id": "guest", "email": "guest@local"}
-                st.rerun()
-        return
-
-    # Auth card
-    col1, col2, col3 = st.columns([1, 1.5, 1])
+    # Centered container
+    col1, col2, col3 = st.columns([1.2, 1.6, 1.2])
 
     with col2:
+        # Logo & Title - Notion style
         st.markdown(
             """
-            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                        padding: 2px; border-radius: 16px; margin-bottom: 1rem;">
-                <div style="background: white; border-radius: 14px; padding: 0.5rem;">
+            <div style="text-align: center; margin-bottom: 32px;">
+                <div style="font-size: 48px; margin-bottom: 16px;">📄</div>
+                <h1 style="font-size: 28px; font-weight: 700; color: rgb(55, 53, 47);
+                           margin: 0 0 8px 0; letter-spacing: -0.5px;">
+                    SilverForge
+                </h1>
+                <p style="font-size: 14px; color: rgba(55, 53, 47, 0.65); margin: 0;">
+                    PDF를 구조화된 Markdown으로 변환하세요
+                </p>
             </div>
             """,
             unsafe_allow_html=True,
         )
 
-        tab1, tab2 = st.tabs(["🔐 로그인", "📝 회원가입"])
+        # Auth card with subtle shadow
+        st.markdown(
+            """
+            <div style="background: white; border-radius: 8px; padding: 24px;
+                        box-shadow: rgba(15, 15, 15, 0.05) 0px 0px 0px 1px,
+                                    rgba(15, 15, 15, 0.1) 0px 3px 6px,
+                                    rgba(15, 15, 15, 0.2) 0px 9px 24px;">
+            """,
+            unsafe_allow_html=True,
+        )
+
+        if not db.is_configured():
+            st.markdown(
+                """
+                <p style="text-align: center; color: rgba(55, 53, 47, 0.65);
+                          font-size: 14px; margin-bottom: 16px;">
+                    Supabase가 설정되지 않았습니다
+                </p>
+                """,
+                unsafe_allow_html=True,
+            )
+            if st.button("게스트로 계속하기", type="primary", use_container_width=True):
+                st.session_state.user = {"id": "guest", "email": "guest@local"}
+                st.rerun()
+            st.markdown("</div>", unsafe_allow_html=True)
+            return
+
+        tab1, tab2 = st.tabs(["로그인", "회원가입"])
 
         with tab1:
-            st.markdown("<br>", unsafe_allow_html=True)
-
-            with st.form("login_form"):
-                st.markdown("##### 이메일")
+            with st.form("login_form", clear_on_submit=False):
+                st.markdown(
+                    "<p style='font-size: 12px; color: rgba(55, 53, 47, 0.65); margin-bottom: 4px;'>이메일</p>",
+                    unsafe_allow_html=True,
+                )
                 email = st.text_input(
                     "이메일",
-                    placeholder="you@example.com",
+                    placeholder="name@company.com",
                     label_visibility="collapsed",
                 )
 
-                st.markdown("##### 비밀번호")
+                st.markdown(
+                    "<p style='font-size: 12px; color: rgba(55, 53, 47, 0.65); margin-bottom: 4px; margin-top: 12px;'>비밀번호</p>",
+                    unsafe_allow_html=True,
+                )
                 password = st.text_input(
                     "비밀번호",
                     type="password",
-                    placeholder="••••••••",
+                    placeholder="비밀번호 입력",
                     label_visibility="collapsed",
                 )
 
-                st.markdown("<br>", unsafe_allow_html=True)
+                st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
 
                 if st.form_submit_button("로그인", type="primary", use_container_width=True):
                     if email and password:
-                        with st.spinner("로그인 중..."):
+                        with st.spinner(""):
                             result = db.sign_in(email, password)
-
                         if "error" in result:
-                            st.error(f"❌ {result['error']}")
+                            st.error(result['error'])
                         else:
                             st.session_state.user = result["user"]
                             st.session_state.access_token = result["session"].access_token
-                            st.success("✅ 로그인 성공!")
-                            time.sleep(0.5)
                             st.rerun()
                     else:
-                        st.warning("이메일과 비밀번호를 입력하세요.")
+                        st.warning("이메일과 비밀번호를 입력하세요")
 
         with tab2:
-            st.markdown("<br>", unsafe_allow_html=True)
-
-            with st.form("signup_form"):
-                st.markdown("##### 이메일")
-                email = st.text_input(
+            with st.form("signup_form", clear_on_submit=False):
+                st.markdown(
+                    "<p style='font-size: 12px; color: rgba(55, 53, 47, 0.65); margin-bottom: 4px;'>이메일</p>",
+                    unsafe_allow_html=True,
+                )
+                signup_email = st.text_input(
                     "이메일",
-                    placeholder="you@example.com",
+                    placeholder="name@company.com",
                     key="signup_email",
                     label_visibility="collapsed",
                 )
 
-                st.markdown("##### 비밀번호")
-                password = st.text_input(
+                st.markdown(
+                    "<p style='font-size: 12px; color: rgba(55, 53, 47, 0.65); margin-bottom: 4px; margin-top: 12px;'>비밀번호</p>",
+                    unsafe_allow_html=True,
+                )
+                signup_password = st.text_input(
                     "비밀번호",
                     type="password",
                     placeholder="6자 이상",
@@ -249,68 +296,73 @@ def render_auth_page():
                     label_visibility="collapsed",
                 )
 
-                st.markdown("##### 비밀번호 확인")
+                st.markdown(
+                    "<p style='font-size: 12px; color: rgba(55, 53, 47, 0.65); margin-bottom: 4px; margin-top: 12px;'>비밀번호 확인</p>",
+                    unsafe_allow_html=True,
+                )
                 password_confirm = st.text_input(
                     "비밀번호 확인",
                     type="password",
-                    placeholder="••••••••",
+                    placeholder="비밀번호 다시 입력",
                     key="signup_pw2",
                     label_visibility="collapsed",
                 )
 
-                st.markdown("<br>", unsafe_allow_html=True)
+                st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
 
-                if st.form_submit_button("회원가입", type="primary", use_container_width=True):
-                    if not email or not password:
-                        st.warning("이메일과 비밀번호를 입력하세요.")
-                    elif len(password) < 6:
-                        st.warning("비밀번호는 6자 이상이어야 합니다.")
-                    elif password != password_confirm:
-                        st.warning("비밀번호가 일치하지 않습니다.")
+                if st.form_submit_button("계정 만들기", type="primary", use_container_width=True):
+                    if not signup_email or not signup_password:
+                        st.warning("이메일과 비밀번호를 입력하세요")
+                    elif len(signup_password) < 6:
+                        st.warning("비밀번호는 6자 이상이어야 합니다")
+                    elif signup_password != password_confirm:
+                        st.warning("비밀번호가 일치하지 않습니다")
                     else:
-                        with st.spinner("가입 중..."):
-                            result = db.sign_up(email, password)
-
+                        with st.spinner(""):
+                            result = db.sign_up(signup_email, signup_password)
                         if "error" in result:
-                            st.error(f"❌ {result['error']}")
+                            st.error(result['error'])
                         else:
-                            st.success("✅ 가입 완료! 이메일을 확인하세요.")
+                            st.success("가입 완료! 이메일을 확인하세요")
 
         # Divider
         st.markdown(
             """
-            <div style="display: flex; align-items: center; margin: 1.5rem 0;">
-                <div style="flex: 1; height: 1px; background: #dee2e6;"></div>
-                <div style="padding: 0 1rem; color: #adb5bd; font-size: 0.85rem;">또는</div>
-                <div style="flex: 1; height: 1px; background: #dee2e6;"></div>
+            <div style="display: flex; align-items: center; margin: 20px 0;">
+                <div style="flex: 1; height: 1px; background: rgba(55, 53, 47, 0.09);"></div>
+                <span style="padding: 0 12px; color: rgba(55, 53, 47, 0.4); font-size: 12px;">또는</span>
+                <div style="flex: 1; height: 1px; background: rgba(55, 53, 47, 0.09);"></div>
             </div>
             """,
             unsafe_allow_html=True,
         )
 
-        if st.button("🚀 게스트로 시작하기", use_container_width=True):
+        if st.button("게스트로 계속하기", use_container_width=True):
             st.session_state.user = {"id": "guest", "email": "guest@local"}
             st.rerun()
 
         st.markdown(
             """
-            <p style="text-align: center; font-size: 0.75rem; color: #adb5bd; margin-top: 1rem;">
-                게스트 모드에서는 데이터가 저장되지 않습니다.
+            <p style="text-align: center; font-size: 11px; color: rgba(55, 53, 47, 0.4);
+                      margin-top: 12px;">
+                게스트 모드에서는 데이터가 저장되지 않습니다
             </p>
+            </div>
             """,
             unsafe_allow_html=True,
         )
 
-    # Footer
-    st.markdown(
-        """
-        <div style="text-align: center; padding: 2rem 0 1rem 0; color: #adb5bd; font-size: 0.8rem;">
-            <p>Powered by <strong>Upstage Document Parse</strong> & <strong>Solar Pro</strong></p>
-            <p>Upstage Ambassador Season 2</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+        # Footer
+        st.markdown(
+            """
+            <div style="text-align: center; margin-top: 32px;">
+                <p style="font-size: 11px; color: rgba(55, 53, 47, 0.4);">
+                    Powered by Upstage Document Parse & Solar Pro
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
 
 def create_job(filename: str, content: bytes) -> str:
