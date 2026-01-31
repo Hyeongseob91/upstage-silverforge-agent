@@ -4,32 +4,85 @@ Upstage Document Parse API를 사용하여 PDF를 파싱하고,
 Rule-based 방식으로 heading hierarchy를 복원합니다.
 """
 
+import base64
 import os
 import re
+from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Optional
 
 import requests
 from dotenv import load_dotenv
 
-load_dotenv()
+# 프로젝트 루트의 .env 파일을 명시적으로 로드
+# src/silverforge/core.py -> src/silverforge -> src -> project_root
+_PROJECT_ROOT = Path(__file__).parent.parent.parent
+_ENV_PATH = _PROJECT_ROOT / ".env"
+load_dotenv(_ENV_PATH)
 
 UPSTAGE_API_KEY = os.getenv("UPSTAGE_API_KEY")
 UPSTAGE_API_URL = "https://api.upstage.ai/v1/document-ai/document-parse"
 
 
-def parse_pdf(pdf_path: str) -> str:
+@dataclass
+class ParseResult:
+    """PDF 파싱 결과"""
+    markdown: str
+    images: dict[str, str] = field(default_factory=dict)  # {image_id: base64_data}
+    raw_response: Optional[dict] = None
+
+    def to_markdown_with_images(self) -> str:
+        """이미지가 포함된 마크다운 반환 (base64 inline)"""
+        result = self.markdown
+
+        # 이미지 참조를 base64 data URI로 변환
+        for img_id, img_data in self.images.items():
+            # ![image](image_id) 패턴을 찾아서 base64로 변환
+            patterns = [
+                f"!\\[([^\\]]*)\\]\\({img_id}\\)",
+                f"!\\[([^\\]]*)\\]\\({img_id.replace('.', '\\.')}\\)",
+                f"!\\[\\]\\({img_id}\\)",
+            ]
+
+            for pattern in patterns:
+                result = re.sub(
+                    pattern,
+                    f'![\\1](data:image/png;base64,{img_data})',
+                    result
+                )
+
+        return result
+
+
+def parse_pdf(pdf_path: str, extract_images: bool = True) -> str:
     """
     PDF -> Raw Markdown (Upstage Document Parse)
 
     Args:
         pdf_path: PDF 파일 경로
+        extract_images: 이미지 추출 여부 (기본: True)
 
     Returns:
-        Raw markdown 텍스트
+        Raw markdown 텍스트 (이미지 포함)
 
     Raises:
         ValueError: API KEY가 없거나 파일이 없는 경우
         RuntimeError: API 호출 실패 시
+    """
+    result = parse_pdf_with_images(pdf_path, extract_images)
+    return result.to_markdown_with_images()
+
+
+def parse_pdf_with_images(pdf_path: str, extract_images: bool = True) -> ParseResult:
+    """
+    PDF -> ParseResult (마크다운 + 이미지 분리)
+
+    Args:
+        pdf_path: PDF 파일 경로
+        extract_images: 이미지 추출 여부
+
+    Returns:
+        ParseResult 객체 (markdown, images)
     """
     if not UPSTAGE_API_KEY:
         raise ValueError("UPSTAGE_API_KEY 환경 변수가 설정되지 않았습니다.")
@@ -50,22 +103,51 @@ def parse_pdf(pdf_path: str) -> str:
             "output_format": "markdown",
         }
 
+        # 이미지 추출 옵션
+        if extract_images:
+            data["base64_encoding"] = "['figure']"
+
         response = requests.post(
             UPSTAGE_API_URL,
             headers=headers,
             files=files,
             data=data,
-            timeout=120,
+            timeout=180,
         )
 
     if response.status_code != 200:
         raise RuntimeError(f"API 오류: {response.status_code} - {response.text}")
 
     result = response.json()
+
+    # 마크다운 추출
     content = result.get("content", {})
     markdown = content.get("markdown", "") or content.get("text", "")
 
-    return markdown
+    # 이미지 추출
+    images = {}
+    elements = result.get("elements", [])
+
+    for element in elements:
+        if element.get("category") in ["figure", "chart", "diagram", "image"]:
+            element_id = element.get("id", "")
+            base64_data = element.get("base64_encoding", "")
+
+            if base64_data:
+                images[element_id] = base64_data
+
+                # 마크다운에 이미지 참조가 없으면 추가
+                img_ref = f"![{element_id}]"
+                if img_ref not in markdown and element_id not in markdown:
+                    # 해당 위치에 이미지 삽입 (bounding_box 기반)
+                    page = element.get("page", 1)
+                    markdown += f"\n\n![Figure {element_id}](data:image/png;base64,{base64_data})\n"
+
+    return ParseResult(
+        markdown=markdown,
+        images=images,
+        raw_response=result,
+    )
 
 
 def refine_headings(markdown: str) -> str:
@@ -161,7 +243,7 @@ def _detect_heading_level(content: str, title_found: bool) -> int:
     return 2
 
 
-def process(pdf_path: str) -> str:
+def process(pdf_path: str, extract_images: bool = True) -> str:
     """
     PDF -> 최종 Markdown (편의 함수)
 
@@ -169,9 +251,27 @@ def process(pdf_path: str) -> str:
 
     Args:
         pdf_path: PDF 파일 경로
+        extract_images: 이미지 추출 여부 (기본: True)
 
     Returns:
-        구조화된 markdown 텍스트
+        구조화된 markdown 텍스트 (이미지 포함)
     """
-    raw = parse_pdf(pdf_path)
+    raw = parse_pdf(pdf_path, extract_images)
     return refine_headings(raw)
+
+
+def process_with_images(pdf_path: str) -> ParseResult:
+    """
+    PDF -> ParseResult (마크다운 + 이미지 분리)
+
+    이미지를 별도로 관리해야 할 때 사용합니다.
+
+    Args:
+        pdf_path: PDF 파일 경로
+
+    Returns:
+        ParseResult 객체
+    """
+    result = parse_pdf_with_images(pdf_path, extract_images=True)
+    result.markdown = refine_headings(result.markdown)
+    return result

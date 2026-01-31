@@ -19,6 +19,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+.claude
 
 # Virtual environments
 .venv/
@@ -60,8 +61,12 @@ Thumbs.db
 # Project specific
 *.pdf
 output/
-results/*.md
-!results/.gitkeep
+
+# Data directories (large files)
+data/raw_data/
+data/processed/
+data/results/*.md
+!data/results/.gitkeep
 
 # Logs
 *.log

@@ -7,12 +7,17 @@ SilverForge로 파싱된 Silver 데이터의 품질을 검사하고,
 import json
 import os
 import re
+from pathlib import Path
 from typing import Optional
 
 from dotenv import load_dotenv
 from langchain_upstage import ChatUpstage
 
-load_dotenv()
+# 프로젝트 루트의 .env 파일을 명시적으로 로드
+# src/silverforge/curator.py -> src/silverforge -> src -> project_root
+_PROJECT_ROOT = Path(__file__).parent.parent.parent
+_ENV_PATH = _PROJECT_ROOT / ".env"
+load_dotenv(_ENV_PATH)
 
 UPSTAGE_API_KEY = os.getenv("UPSTAGE_API_KEY")
 
