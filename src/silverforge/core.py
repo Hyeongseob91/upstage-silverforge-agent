@@ -20,7 +20,22 @@ _PROJECT_ROOT = Path(__file__).parent.parent.parent
 _ENV_PATH = _PROJECT_ROOT / ".env"
 load_dotenv(_ENV_PATH)
 
-UPSTAGE_API_KEY = os.getenv("UPSTAGE_API_KEY")
+
+def _get_env(key: str):
+    """환경변수 또는 Streamlit secrets에서 값 가져오기"""
+    value = os.getenv(key)
+    if value:
+        return value
+    try:
+        import streamlit as st
+        if hasattr(st, 'secrets') and key in st.secrets:
+            return st.secrets[key]
+    except Exception:
+        pass
+    return None
+
+
+UPSTAGE_API_KEY = _get_env("UPSTAGE_API_KEY")
 UPSTAGE_API_URL = "https://api.upstage.ai/v1/document-ai/document-parse"
 
 
@@ -37,19 +52,25 @@ class ParseResult:
 
         # 이미지 참조를 base64 data URI로 변환
         for img_id, img_data in self.images.items():
-            # ![image](image_id) 패턴을 찾아서 base64로 변환
-            patterns = [
-                f"!\\[([^\\]]*)\\]\\({img_id}\\)",
-                f"!\\[([^\\]]*)\\]\\({img_id.replace('.', '\\.')}\\)",
-                f"!\\[\\]\\({img_id}\\)",
-            ]
+            # img_id에서 특수문자 이스케이프
+            escaped_id = re.escape(str(img_id))
+            data_uri = f"data:image/png;base64,{img_data}"
 
-            for pattern in patterns:
-                result = re.sub(
-                    pattern,
-                    f'![\\1](data:image/png;base64,{img_data})',
-                    result
-                )
+            # ![alt text](image_id) 패턴 - 캡처 그룹 있음
+            pattern_with_alt = f"!\\[([^\\]]*)\\]\\({escaped_id}\\)"
+            result = re.sub(
+                pattern_with_alt,
+                lambda m: f"![{m.group(1)}]({data_uri})",
+                result
+            )
+
+            # ![](image_id) 패턴 - 빈 alt text
+            pattern_empty_alt = f"!\\[\\]\\({escaped_id}\\)"
+            result = re.sub(
+                pattern_empty_alt,
+                f"![]({data_uri})",
+                result
+            )
 
         return result
 
@@ -130,7 +151,7 @@ def parse_pdf_with_images(pdf_path: str, extract_images: bool = True) -> ParseRe
 
     for element in elements:
         if element.get("category") in ["figure", "chart", "diagram", "image"]:
-            element_id = element.get("id", "")
+            element_id = str(element.get("id", ""))
             base64_data = element.get("base64_encoding", "")
 
             if base64_data:

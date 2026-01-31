@@ -169,9 +169,40 @@ Structure quality evaluation (heading, table, formula)
 #### `evaluate_semantic(silver_md: str) -> dict`
 Semantic quality evaluation based on Solar Pro2
 
+## Deployment (Streamlit Cloud)
+
+### 1. Supabase Setup
+
+1. Create a project at [supabase.com](https://supabase.com)
+2. Go to **SQL Editor** and run `supabase/schema.sql`
+3. Copy your **Project URL** and **anon key** from Settings > API
+
+### 2. Streamlit Cloud Setup
+
+1. Push your repo to GitHub
+2. Go to [share.streamlit.io](https://share.streamlit.io)
+3. Deploy with these settings:
+   - **Main file path**: `src/silverforge/app.py`
+   - **Python version**: 3.11
+
+4. Add secrets in Streamlit Cloud Dashboard:
+```toml
+# .streamlit/secrets.toml (in Streamlit Cloud settings)
+UPSTAGE_API_KEY = "your_upstage_api_key"
+SUPABASE_URL = "https://your-project.supabase.co"
+SUPABASE_KEY = "your_supabase_anon_key"
+```
+
+### 3. Features
+
+- **Authentication**: Email/Password signup & login via Supabase Auth
+- **Cloud Storage**: Documents saved to Supabase Database
+- **Guest Mode**: Use without login (data not persisted)
+
 ## Acknowledgements
 
 - [Upstage](https://upstage.ai/) - Document Parse API, Solar Pro2
+- [Supabase](https://supabase.com/) - Auth & Database
 - Upstage Ambassador Season 2 Program
 
 ## License

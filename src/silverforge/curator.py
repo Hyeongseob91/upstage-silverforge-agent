@@ -19,7 +19,22 @@ _PROJECT_ROOT = Path(__file__).parent.parent.parent
 _ENV_PATH = _PROJECT_ROOT / ".env"
 load_dotenv(_ENV_PATH)
 
-UPSTAGE_API_KEY = os.getenv("UPSTAGE_API_KEY")
+
+def _get_env(key: str):
+    """환경변수 또는 Streamlit secrets에서 값 가져오기"""
+    value = os.getenv(key)
+    if value:
+        return value
+    try:
+        import streamlit as st
+        if hasattr(st, 'secrets') and key in st.secrets:
+            return st.secrets[key]
+    except Exception:
+        pass
+    return None
+
+
+UPSTAGE_API_KEY = _get_env("UPSTAGE_API_KEY")
 
 
 def evaluate_text_quality(silver_md: str, original_text: Optional[str] = None) -> dict:

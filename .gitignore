@@ -33,6 +33,9 @@ ENV/
 .env.*.local
 !.env.example
 
+# Streamlit secrets
+.streamlit/secrets.toml
+
 # IDE
 .idea/
 .vscode/

@@ -1,0 +1,18 @@
+# SilverForge - Streamlit Cloud Requirements
+
+# Core
+requests>=2.31.0
+python-dotenv>=1.0.0
+
+# Upstage
+langchain-upstage>=0.1.0
+
+# Quality metrics
+jiwer>=3.0.0
+
+# UI
+streamlit>=1.30.0
+plotly>=5.18.0
+
+# Database
+supabase>=2.0.0
