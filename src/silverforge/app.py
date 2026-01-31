@@ -120,6 +120,39 @@ def init_session_state():
         st.session_state.access_token = None
     if "auth_mode" not in st.session_state:
         st.session_state.auth_mode = "login"
+    # Password visibility
+    if "show_password" not in st.session_state:
+        st.session_state.show_password = {}
+
+
+def password_input_with_toggle(label: str, placeholder: str, key: str) -> str:
+    """비밀번호 입력 필드 (보기/가리기 토글 포함)"""
+    # Initialize visibility state for this key
+    if key not in st.session_state.show_password:
+        st.session_state.show_password[key] = False
+
+    is_visible = st.session_state.show_password[key]
+
+    # Container for password field with toggle
+    col_input, col_toggle = st.columns([10, 1])
+
+    with col_input:
+        password = st.text_input(
+            label,
+            type="default" if is_visible else "password",
+            placeholder=placeholder,
+            label_visibility="collapsed",
+            key=f"{key}_input",
+        )
+
+    with col_toggle:
+        # Eye icon toggle button
+        icon = "👁" if not is_visible else "👁‍🗨"
+        if st.button(icon, key=f"{key}_toggle", help="비밀번호 보기/가리기"):
+            st.session_state.show_password[key] = not is_visible
+            st.rerun()
+
+    return password
 
 
 def render_auth_page():
@@ -172,6 +205,35 @@ def render_auth_page():
         }
         .stTextInput > div > div > input {
             width: 100% !important;
+        }
+
+        /* Password toggle button styling */
+        .password-field [data-testid="stHorizontalBlock"] {
+            align-items: center;
+            position: relative;
+        }
+        .password-field [data-testid="stHorizontalBlock"] > div:last-child {
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 0 !important;
+            border: none !important;
+        }
+        .password-field [data-testid="stHorizontalBlock"] > div:last-child button {
+            background: transparent !important;
+            border: none !important;
+            color: rgba(55, 53, 47, 0.4) !important;
+            padding: 4px 8px !important;
+            min-height: auto !important;
+            font-size: 14px !important;
+        }
+        .password-field [data-testid="stHorizontalBlock"] > div:last-child button:hover {
+            color: rgba(55, 53, 47, 0.7) !important;
+            background: transparent !important;
+        }
+        .password-field .stTextInput > div > div > input {
+            padding-right: 40px !important;
         }
         </style>
         """,
@@ -237,25 +299,17 @@ def render_auth_page():
                 "<p style='font-size: 12px; color: rgba(55, 53, 47, 0.65); margin-bottom: 4px; margin-top: 12px;'>비밀번호</p>",
                 unsafe_allow_html=True,
             )
-            password = st.text_input(
-                "비밀번호",
-                type="password",
-                placeholder="6자 이상",
-                label_visibility="collapsed",
-                key="signup_password",
-            )
+            st.markdown('<div class="password-field">', unsafe_allow_html=True)
+            password = password_input_with_toggle("비밀번호", "6자 이상", "signup_password")
+            st.markdown('</div>', unsafe_allow_html=True)
 
             st.markdown(
                 "<p style='font-size: 12px; color: rgba(55, 53, 47, 0.65); margin-bottom: 4px; margin-top: 12px;'>비밀번호 확인</p>",
                 unsafe_allow_html=True,
             )
-            password_confirm = st.text_input(
-                "비밀번호 확인",
-                type="password",
-                placeholder="비밀번호 다시 입력",
-                label_visibility="collapsed",
-                key="signup_password_confirm",
-            )
+            st.markdown('<div class="password-field">', unsafe_allow_html=True)
+            password_confirm = password_input_with_toggle("비밀번호 확인", "비밀번호 다시 입력", "signup_password_confirm")
+            st.markdown('</div>', unsafe_allow_html=True)
 
             st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
 
@@ -297,13 +351,9 @@ def render_auth_page():
                 "<p style='font-size: 12px; color: rgba(55, 53, 47, 0.65); margin-bottom: 4px; margin-top: 12px;'>비밀번호</p>",
                 unsafe_allow_html=True,
             )
-            password = st.text_input(
-                "비밀번호",
-                type="password",
-                placeholder="비밀번호 입력",
-                label_visibility="collapsed",
-                key="login_password",
-            )
+            st.markdown('<div class="password-field">', unsafe_allow_html=True)
+            password = password_input_with_toggle("비밀번호", "비밀번호 입력", "login_password")
+            st.markdown('</div>', unsafe_allow_html=True)
 
             st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
 
