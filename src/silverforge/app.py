@@ -264,13 +264,6 @@ def render_auth_page():
             display: none !important;
         }
 
-        /* Custom eye icon inside password field */
-        input[type="password"] {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='rgba(55,53,47,0.35)'%3E%3Cpath d='M.2 10a11 11 0 0119.6 0A11 11 0 01.2 10zm9.8 4a4 4 0 100-8 4 4 0 000 8zm0-2a2 2 0 110-4 2 2 0 010 4z'/%3E%3C/svg%3E") !important;
-            background-repeat: no-repeat !important;
-            background-position: right 10px center !important;
-            padding-right: 36px !important;
-        }
         </style>
         """,
         unsafe_allow_html=True,
@@ -554,15 +547,23 @@ def render_sidebar():
         )
 
         if uploaded_files:
+            # Track uploaded file names to prevent duplicates
+            if "uploaded_file_names" not in st.session_state:
+                st.session_state.uploaded_file_names = set()
+
             new_files = []
             for file in uploaded_files:
-                existing = [
-                    j for j in st.session_state.jobs.values()
-                    if j["filename"] == file.name
-                ]
-                if not existing:
+                # Check both jobs and uploaded_file_names to prevent duplicates
+                file_key = f"{file.name}_{file.size}"
+                already_exists = any(
+                    j["filename"] == file.name for j in st.session_state.jobs.values()
+                )
+                already_uploaded = file_key in st.session_state.uploaded_file_names
+
+                if not already_exists and not already_uploaded:
                     content = file.read()
                     create_job(file.name, content)
+                    st.session_state.uploaded_file_names.add(file_key)
                     new_files.append(file.name)
 
             if new_files:
