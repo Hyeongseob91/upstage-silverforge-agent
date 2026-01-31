@@ -38,65 +38,134 @@ import database as db
 
 
 def inject_custom_css():
-    """커스텀 CSS 주입"""
+    """커스텀 CSS 주입 - Notion Style"""
     st.markdown(
         """
         <style>
+        /* Notion color palette */
+        :root {
+            --notion-text: rgb(55, 53, 47);
+            --notion-text-secondary: rgba(55, 53, 47, 0.65);
+            --notion-text-tertiary: rgba(55, 53, 47, 0.4);
+            --notion-border: rgba(55, 53, 47, 0.09);
+            --notion-bg-hover: rgba(55, 53, 47, 0.04);
+            --notion-bg-gray: rgba(55, 53, 47, 0.03);
+            --notion-accent: #2eaadc;
+        }
+
+        /* Base layout */
         .block-container {
-            padding-top: 1rem;
-            padding-bottom: 1rem;
+            padding-top: 2rem;
+            padding-bottom: 2rem;
             max-width: 100%;
         }
 
+        /* Typography - Notion style */
+        h1, h2, h3, h4, h5, h6 {
+            color: rgb(55, 53, 47) !important;
+            font-weight: 600 !important;
+            letter-spacing: -0.5px;
+        }
+
+        p, span, div {
+            color: rgb(55, 53, 47);
+        }
+
+        /* Sidebar - Notion style */
         [data-testid="stSidebar"] {
-            min-width: 300px;
-            max-width: 350px;
+            background-color: rgb(251, 251, 250) !important;
+            border-right: 1px solid rgba(55, 53, 47, 0.09) !important;
+            min-width: 280px;
+            max-width: 320px;
+        }
+
+        [data-testid="stSidebar"] [data-testid="stMarkdown"] {
+            color: rgb(55, 53, 47);
         }
 
         [data-testid="stSidebar"] [data-testid="stFileUploader"] {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 0.5rem;
+            background: rgba(55, 53, 47, 0.03);
+            border: 1px dashed rgba(55, 53, 47, 0.16);
+            border-radius: 4px;
+            padding: 0.75rem;
         }
 
         [data-testid="stFileUploader"] > div > div {
-            max-height: 200px;
+            max-height: 180px;
             overflow-y: auto;
         }
 
-        /* Main content columns - only when sidebar is present (logged in) */
-        [data-testid="stSidebarContent"] ~ [data-testid="stAppViewContainer"] [data-testid="stHorizontalBlock"] > div:first-child {
-            border-right: 2px solid #e0e0e0;
-            padding-right: 1.5rem;
-        }
-
-        [data-testid="stSidebarContent"] ~ [data-testid="stAppViewContainer"] [data-testid="stHorizontalBlock"] > div:last-child {
-            padding-left: 1.5rem;
-        }
-
+        /* Buttons - Notion style */
         .stButton > button {
-            border-radius: 6px;
+            border-radius: 4px !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+            transition: background-color 0.1s ease !important;
+            border: 1px solid rgba(55, 53, 47, 0.16) !important;
         }
 
+        .stButton > button:hover {
+            background-color: rgba(55, 53, 47, 0.04) !important;
+        }
+
+        .stButton > button[kind="primary"] {
+            background-color: #2eaadc !important;
+            border: none !important;
+            color: white !important;
+        }
+
+        .stButton > button[kind="primary"]:hover {
+            background-color: #1a9bcd !important;
+        }
+
+        /* Dividers */
         hr {
-            margin: 0.75rem 0;
+            margin: 1rem 0;
             border: none;
-            border-top: 1px solid #e9ecef;
+            border-top: 1px solid rgba(55, 53, 47, 0.09);
         }
 
+        /* Metrics - Notion style */
         [data-testid="stMetric"] {
-            background: #f8f9fa;
-            padding: 0.5rem;
-            border-radius: 6px;
+            background: rgba(55, 53, 47, 0.03);
+            padding: 0.75rem;
+            border-radius: 4px;
+            border: 1px solid rgba(55, 53, 47, 0.09);
         }
 
-        .auth-container {
-            max-width: 400px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: #f8f9fa;
-            border-radius: 12px;
+        [data-testid="stMetric"] label {
+            color: rgba(55, 53, 47, 0.65) !important;
+            font-size: 12px !important;
         }
+
+        [data-testid="stMetric"] [data-testid="stMetricValue"] {
+            color: rgb(55, 53, 47) !important;
+            font-weight: 600 !important;
+        }
+
+        /* Progress bar - Notion accent */
+        .stProgress > div > div > div {
+            background-color: #2eaadc !important;
+        }
+
+        /* Download button */
+        .stDownloadButton > button {
+            border-radius: 4px !important;
+            border: 1px solid rgba(55, 53, 47, 0.16) !important;
+        }
+
+        /* Expander - Notion style */
+        .streamlit-expanderHeader {
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            color: rgb(55, 53, 47) !important;
+            background: rgba(55, 53, 47, 0.03) !important;
+            border-radius: 4px !important;
+        }
+
+        /* Hide menu and footer */
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
         </style>
         """,
         unsafe_allow_html=True,
@@ -174,17 +243,12 @@ def render_auth_page():
             width: 100% !important;
         }
 
-        /* Hide password visibility toggle icon */
-        .stTextInput button {
-            display: none !important;
-        }
-        .stTextInput [data-testid="stTextInputRootElement"] > div:last-child {
-            display: none !important;
-        }
-        input[type="password"] + button,
-        input[type="password"] ~ button,
-        input[type="password"] ~ div > button {
-            display: none !important;
+        /* Hide password visibility toggle icon - specific selector */
+        [data-testid="stTextInput-RootElement"] button[kind="icon"],
+        .stTextInput [data-baseweb="input"] + div button {
+            visibility: hidden !important;
+            width: 0 !important;
+            padding: 0 !important;
         }
         </style>
         """,
@@ -428,13 +492,21 @@ def save_job_to_db(job: dict):
 
 
 def render_sidebar():
-    """사이드바 렌더링"""
+    """사이드바 렌더링 - Notion Style"""
     with st.sidebar:
-        # User info
+        # User info - Notion style
         user = st.session_state.user
         user_email = user.email if hasattr(user, 'email') else user.get('email', 'Guest')
 
-        st.markdown(f"👤 **{user_email}**")
+        st.markdown(
+            f"""
+            <div style="padding: 8px 0; margin-bottom: 8px;">
+                <span style="color: rgba(55, 53, 47, 0.65); font-size: 12px;">로그인</span><br>
+                <span style="color: rgb(55, 53, 47); font-size: 14px; font-weight: 500;">{user_email}</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
         if st.button("로그아웃", use_container_width=True):
             db.sign_out()
             st.session_state.user = None
@@ -443,7 +515,15 @@ def render_sidebar():
             st.rerun()
 
         st.markdown("---")
-        st.markdown("## 📤 PDF 업로드")
+        st.markdown(
+            """
+            <p style="font-size: 12px; font-weight: 600; color: rgba(55, 53, 47, 0.65);
+                      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+                PDF 업로드
+            </p>
+            """,
+            unsafe_allow_html=True,
+        )
 
         uploaded_files = st.file_uploader(
             "PDF 파일을 드래그하거나 클릭",
@@ -532,22 +612,29 @@ def process_single_job(job_id: str, progress_bar, status_text):
 
 
 def render_pending_list():
-    """대기 목록 렌더링"""
+    """대기 목록 렌더링 - Notion Style"""
     pending_jobs = [
         j for j in st.session_state.jobs.values()
         if j["status"] == "pending"
     ]
 
-    st.markdown("### 📋 대기 목록")
-    st.markdown("---")
+    st.markdown(
+        """
+        <h3 style="font-size: 16px; font-weight: 600; color: rgb(55, 53, 47); margin-bottom: 12px;">
+            대기 목록
+        </h3>
+        """,
+        unsafe_allow_html=True,
+    )
 
     if not pending_jobs:
         st.markdown(
             """
-            <div style="text-align: center; padding: 2rem; color: #6c757d;">
-                <p style="font-size: 1.5rem;">📁</p>
-                <p>대기 중인 파일이 없습니다</p>
-                <p style="font-size: 0.85rem;">사이드바에서 PDF를 업로드하세요</p>
+            <div style="text-align: center; padding: 40px 20px; color: rgba(55, 53, 47, 0.4);
+                        background: rgba(55, 53, 47, 0.03); border-radius: 4px;">
+                <p style="font-size: 24px; margin-bottom: 8px;">📄</p>
+                <p style="font-size: 14px; margin: 0;">대기 중인 파일이 없습니다</p>
+                <p style="font-size: 12px; margin-top: 4px;">사이드바에서 PDF를 업로드하세요</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -598,9 +685,15 @@ def render_pending_list():
 
 
 def render_results_panel():
-    """결과 패널 렌더링"""
-    st.markdown("### ✅ 변환 결과")
-    st.markdown("---")
+    """결과 패널 렌더링 - Notion Style"""
+    st.markdown(
+        """
+        <h3 style="font-size: 16px; font-weight: 600; color: rgb(55, 53, 47); margin-bottom: 12px;">
+            변환 결과
+        </h3>
+        """,
+        unsafe_allow_html=True,
+    )
 
     all_jobs = list(st.session_state.jobs.values())
     non_pending = [j for j in all_jobs if j["status"] in ["completed", "failed"]]
@@ -608,9 +701,10 @@ def render_results_panel():
     if not non_pending:
         st.markdown(
             """
-            <div style="text-align: center; padding: 2rem; color: #6c757d;">
-                <p style="font-size: 1.5rem;">📭</p>
-                <p>변환 결과가 없습니다</p>
+            <div style="text-align: center; padding: 40px 20px; color: rgba(55, 53, 47, 0.4);
+                        background: rgba(55, 53, 47, 0.03); border-radius: 4px;">
+                <p style="font-size: 24px; margin-bottom: 8px;">✨</p>
+                <p style="font-size: 14px; margin: 0;">변환 결과가 없습니다</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -640,30 +734,37 @@ def render_results_panel():
 
 
 def render_job_card(job: dict):
-    """Job 카드 렌더링"""
+    """Job 카드 렌더링 - Notion Style"""
     status = job["status"]
     filename = job["filename"]
 
     if status == "completed":
         score = job['quality_score']
         if score >= 80:
-            border_color = "#28a745"
-            score_color = "#28a745"
+            badge_bg = "rgba(0, 135, 90, 0.1)"
+            badge_color = "rgb(0, 135, 90)"
         elif score >= 60:
-            border_color = "#ffc107"
-            score_color = "#856404"
+            badge_bg = "rgba(203, 145, 47, 0.1)"
+            badge_color = "rgb(203, 145, 47)"
         else:
-            border_color = "#dc3545"
-            score_color = "#dc3545"
+            badge_bg = "rgba(212, 76, 71, 0.1)"
+            badge_color = "rgb(212, 76, 71)"
 
         saved_icon = "☁️" if job.get("saved_to_db") else ""
 
         st.markdown(
             f"""
-            <div style="background: #f8f9fa; border-radius: 8px; padding: 0.75rem 1rem;
-                        margin-bottom: 0.5rem; border-left: 4px solid {border_color};">
-                <strong>✅ {filename}</strong> {saved_icon}<br>
-                <small style="color: {score_color}; font-weight: 600;">점수: {score}/100</small>
+            <div style="background: rgba(55, 53, 47, 0.03); border-radius: 4px; padding: 12px 14px;
+                        margin-bottom: 8px; border: 1px solid rgba(55, 53, 47, 0.09);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 14px; font-weight: 500; color: rgb(55, 53, 47);">
+                        📄 {filename} {saved_icon}
+                    </span>
+                    <span style="background: {badge_bg}; color: {badge_color}; padding: 2px 8px;
+                                 border-radius: 3px; font-size: 12px; font-weight: 500;">
+                        {score}점
+                    </span>
+                </div>
             </div>
             """,
             unsafe_allow_html=True,
@@ -982,10 +1083,21 @@ def main():
     # Sidebar
     render_sidebar()
 
-    # Header
-    st.markdown("# 🔥 SilverForge")
-    st.caption("PDF를 구조화된 Markdown으로 변환 - VLM/SLM 학습용 GT 데이터 생성")
-    st.markdown("---")
+    # Header - Notion style
+    st.markdown(
+        """
+        <div style="margin-bottom: 24px;">
+            <h1 style="font-size: 32px; font-weight: 700; color: rgb(55, 53, 47);
+                       margin: 0 0 4px 0; letter-spacing: -1px;">
+                SilverForge
+            </h1>
+            <p style="font-size: 14px; color: rgba(55, 53, 47, 0.65); margin: 0;">
+                PDF를 구조화된 Markdown으로 변환
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     # Analysis view
     if st.session_state.analysis_job_id:
