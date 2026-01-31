@@ -1,10 +1,24 @@
 # SilverForge
 
 [![한국어](https://img.shields.io/badge/lang-한국어-blue.svg)](README.ko.md)
+[![Streamlit](https://img.shields.io/badge/Streamlit-Live%20Demo-FF4B4B?logo=streamlit)](https://silverforge.streamlit.app)
 
 **Convert PDF to Structured Markdown** - Ground Truth Data Generation Tool for VLM/SLM Training
 
 > Upstage Ambassador Season 2 Project
+
+## Live Demo
+
+**[https://silverforge.streamlit.app](https://silverforge.streamlit.app)**
+
+## Features
+
+- **PDF to Markdown Conversion** - Using Upstage Document Parse API
+- **Heading Hierarchy Restoration** - Rule-based approach with 95%+ accuracy
+- **Quality Analysis** - Text, Structure, Semantic evaluation with Solar Pro
+- **Notion-style UI** - Clean, minimal design
+- **Cloud Storage** - Supabase integration for user authentication & data persistence
+- **Batch Processing** - Multiple PDF upload and sequential processing
 
 ## Problem Statement
 
@@ -75,31 +89,18 @@ raw_md = parse_pdf("paper.pdf")      # Upstage API call
 silver_md = refine_headings(raw_md)  # Heading restoration
 ```
 
-### CLI Example
+### Web UI (Streamlit)
 
 ```bash
-python example.py paper.pdf
-# -> Creates paper_silver.md
-```
-
-### Web UI Console
-
-```bash
-# Run Streamlit UI (recommended)
-python run_ui.py
-# -> http://localhost:8502
-
-# Run FastAPI server (for API usage)
-python run_ui.py --api
-# -> http://localhost:8000
-# -> API docs: http://localhost:8000/docs
+streamlit run src/silverforge/app.py
 ```
 
 **UI Features:**
+- Notion-style clean design
+- Email/Password authentication (Supabase)
 - Multiple PDF upload (Drag & Drop)
-- Sequential processing with real-time progress
-- Quality score display (Curator Agent)
-- Result preview (popup)
+- Real-time processing with progress bar
+- Quality score visualization
 - Individual/bulk download (ZIP)
 
 ## Dataset Curator Agent
@@ -120,54 +121,36 @@ print(result)
 
 ### Quality Check Items
 
-1. **Text Quality**: CER/WER calculation (compared to original)
-2. **Structure Quality**: Heading hierarchy, table structure, formula blocks
-3. **Semantic Quality**: Logic/completeness/coherence evaluation based on Solar Pro2
+1. **Text Quality**: Character/Word count, CER/WER (if original provided)
+2. **Structure Quality**: Heading hierarchy, table structure, equation blocks
+3. **Semantic Quality**: Logic/completeness/coherence evaluation via Solar Pro
 
-```bash
-python example_curate.py results/attention_paper.md
-```
+## Tech Stack
+
+- **Frontend**: Streamlit (Notion-style UI)
+- **Backend**: Python
+- **PDF Parsing**: Upstage Document Parse API
+- **Quality Evaluation**: Upstage Solar Pro
+- **Authentication**: Supabase Auth
+- **Database**: Supabase PostgreSQL
+- **Deployment**: Streamlit Cloud
 
 ## Project Structure
 
 ```
 silverforge/
-├── silverforge/
+├── src/silverforge/
 │   ├── __init__.py      # exports
 │   ├── core.py          # parsing (parse_pdf, refine_headings)
 │   ├── curator.py       # quality check (curate)
-│   ├── api.py           # FastAPI backend
+│   ├── database.py      # Supabase integration
 │   └── app.py           # Streamlit UI
-├── run_ui.py            # UI launcher script
+├── supabase/
+│   └── schema.sql       # Database schema
 ├── example.py           # parsing example
 ├── example_curate.py    # quality check example
-└── results/
-    └── attention_paper.md  # PoC output
+└── requirements.txt     # dependencies
 ```
-
-## API Reference
-
-### Core Functions
-
-#### `parse_pdf(pdf_path: str) -> str`
-Parse PDF file using Upstage Document Parse API and return raw markdown
-
-#### `refine_headings(markdown: str) -> str`
-Restore heading hierarchy using rule-based approach
-
-#### `process(pdf_path: str) -> str`
-Convenience function combining `parse_pdf` + `refine_headings`
-
-### Curator Functions
-
-#### `curate(silver_md: str, original_text: str = None) -> dict`
-Full quality evaluation (text + structure + semantic)
-
-#### `evaluate_structure(silver_md: str) -> dict`
-Structure quality evaluation (heading, table, formula)
-
-#### `evaluate_semantic(silver_md: str) -> dict`
-Semantic quality evaluation based on Solar Pro2
 
 ## Deployment (Streamlit Cloud)
 
@@ -187,21 +170,14 @@ Semantic quality evaluation based on Solar Pro2
 
 4. Add secrets in Streamlit Cloud Dashboard:
 ```toml
-# .streamlit/secrets.toml (in Streamlit Cloud settings)
 UPSTAGE_API_KEY = "your_upstage_api_key"
 SUPABASE_URL = "https://your-project.supabase.co"
 SUPABASE_KEY = "your_supabase_anon_key"
 ```
 
-### 3. Features
-
-- **Authentication**: Email/Password signup & login via Supabase Auth
-- **Cloud Storage**: Documents saved to Supabase Database
-- **Guest Mode**: Use without login (data not persisted)
-
 ## Acknowledgements
 
-- [Upstage](https://upstage.ai/) - Document Parse API, Solar Pro2
+- [Upstage](https://upstage.ai/) - Document Parse API, Solar Pro
 - [Supabase](https://supabase.com/) - Auth & Database
 - Upstage Ambassador Season 2 Program
 
