@@ -547,23 +547,15 @@ def render_sidebar():
         )
 
         if uploaded_files:
-            # Track uploaded file names to prevent duplicates
-            if "uploaded_file_names" not in st.session_state:
-                st.session_state.uploaded_file_names = set()
-
             new_files = []
-            for file in uploaded_files:
-                # Check both jobs and uploaded_file_names to prevent duplicates
-                file_key = f"{file.name}_{file.size}"
-                already_exists = any(
-                    j["filename"] == file.name for j in st.session_state.jobs.values()
-                )
-                already_uploaded = file_key in st.session_state.uploaded_file_names
+            existing_filenames = {j["filename"] for j in st.session_state.jobs.values()}
 
-                if not already_exists and not already_uploaded:
+            for file in uploaded_files:
+                if file.name not in existing_filenames:
+                    file.seek(0)  # Reset file pointer
                     content = file.read()
                     create_job(file.name, content)
-                    st.session_state.uploaded_file_names.add(file_key)
+                    existing_filenames.add(file.name)
                     new_files.append(file.name)
 
             if new_files:
