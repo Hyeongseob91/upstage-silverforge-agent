@@ -243,12 +243,19 @@ def render_auth_page():
             width: 100% !important;
         }
 
-        /* Hide default password toggle and add custom eye icon */
-        [data-testid="stTextInput-RootElement"] button[kind="icon"],
-        .stTextInput [data-baseweb="input"] + div button {
+        /* Hide ALL buttons inside text input containers */
+        .stTextInput button,
+        .stTextInput svg,
+        .stTextInput [data-testid="baseButton-icon"],
+        [data-baseweb="input"] ~ button,
+        [data-baseweb="input"] ~ div,
+        .stTextInput > div > div > div:nth-child(2) {
+            display: none !important;
             visibility: hidden !important;
             width: 0 !important;
-            padding: 0 !important;
+            height: 0 !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
         }
 
         /* Custom eye icon inside password field */
