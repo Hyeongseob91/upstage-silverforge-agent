@@ -229,7 +229,7 @@ def render_auth_page():
             background-color: #1a9bcd !important;
         }
 
-        /* Consistent input width */
+        /* Force all inputs to same width */
         .stTextInput {
             width: 100% !important;
         }
@@ -238,24 +238,29 @@ def render_auth_page():
         }
         .stTextInput > div > div {
             width: 100% !important;
+            display: flex !important;
         }
-        .stTextInput > div > div > input {
+        .stTextInput > div > div > div:first-child {
+            flex: 1 !important;
             width: 100% !important;
         }
+        .stTextInput input {
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
 
-        /* Hide ALL buttons inside text input containers */
-        .stTextInput button,
-        .stTextInput svg,
-        .stTextInput [data-testid="baseButton-icon"],
-        [data-baseweb="input"] ~ button,
-        [data-baseweb="input"] ~ div,
-        .stTextInput > div > div > div:nth-child(2) {
+        /* Hide password toggle button completely */
+        .stTextInput > div > div > div:not(:first-child) {
             display: none !important;
-            visibility: hidden !important;
             width: 0 !important;
             height: 0 !important;
-            opacity: 0 !important;
-            pointer-events: none !important;
+            overflow: hidden !important;
+            position: absolute !important;
+            visibility: hidden !important;
+        }
+        .stTextInput button,
+        .stTextInput svg {
+            display: none !important;
         }
 
         /* Custom eye icon inside password field */
