@@ -82,6 +82,26 @@ python example.py paper.pdf
 # -> paper_silver.md 생성
 ```
 
+### UI Console (Web)
+
+```bash
+# Streamlit UI 실행 (권장)
+python run_ui.py
+# -> http://localhost:8501
+
+# FastAPI 서버 실행 (API 용도)
+python run_ui.py --api
+# -> http://localhost:8000
+# -> API docs: http://localhost:8000/docs
+```
+
+**UI 기능:**
+- 여러 PDF 동시 업로드 (Drag & Drop)
+- 순차 처리 및 실시간 진행률
+- 품질 점수 표시 (Curator Agent)
+- 결과 미리보기 (팝업)
+- 개별/전체 다운로드 (ZIP)
+
 ## Dataset Curator Agent
 
 Silver 데이터의 품질을 자동으로 검사하는 Agent입니다.

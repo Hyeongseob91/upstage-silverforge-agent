@@ -24,6 +24,11 @@ dependencies = [
     "python-dotenv>=1.0.0",
     "langchain-upstage>=0.1.0",
     "jiwer>=3.0.0",
+    # UI Console
+    "streamlit>=1.30.0",
+    "fastapi>=0.109.0",
+    "uvicorn>=0.27.0",
+    "python-multipart>=0.0.6",
 ]
 
 [project.optional-dependencies]
@@ -31,6 +36,10 @@ dev = [
     "pytest>=7.0.0",
     "ruff>=0.1.0",
 ]
+
+[project.scripts]
+silverforge-ui = "silverforge.app:main"
+silverforge-api = "silverforge.api:run_server"
 
 [build-system]
 requires = ["hatchling"]
