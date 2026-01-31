@@ -21,22 +21,31 @@ wheels/
 *.egg
 
 # Virtual environments
-.env
-.venv
-env/
+.venv/
 venv/
+env/
 ENV/
+
+# Environment variables (IMPORTANT: contains API keys)
+.env
+.env.local
+.env.*.local
+!.env.example
 
 # IDE
 .idea/
 .vscode/
 *.swp
 *.swo
+*.sublime-project
+*.sublime-workspace
 
 # Testing
 .pytest_cache/
 .coverage
 htmlcov/
+.tox/
+.nox/
 
 # Distribution
 *.tar.gz
@@ -45,7 +54,20 @@ htmlcov/
 # OS
 .DS_Store
 Thumbs.db
+*.bak
+*~
 
 # Project specific
 *.pdf
 output/
+results/*.md
+!results/.gitkeep
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp

@@ -19,8 +19,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
-from .core import process
-from .curator import curate
+# Handle both direct execution and package import
+try:
+    from .core import process
+    from .curator import curate
+except ImportError:
+    from pathlib import Path
+    import sys
+    sys.path.insert(0, str(Path(__file__).parent.parent))
+    from silverforge.core import process
+    from silverforge.curator import curate
 
 app = FastAPI(
     title="SilverForge API",

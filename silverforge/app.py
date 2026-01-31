@@ -8,6 +8,7 @@ Streamlit 기반 웹 인터페이스
 """
 
 import io
+import sys
 import tempfile
 import time
 import zipfile
@@ -16,8 +17,15 @@ from pathlib import Path
 
 import streamlit as st
 
-from .core import process
-from .curator import curate
+# Handle both direct execution and package import
+try:
+    from .core import process
+    from .curator import curate
+except ImportError:
+    # Add parent directory to path for direct execution
+    sys.path.insert(0, str(Path(__file__).parent.parent))
+    from silverforge.core import process
+    from silverforge.curator import curate
 
 
 def init_session_state():
