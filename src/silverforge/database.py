@@ -95,6 +95,37 @@ def sign_in(email: str, password: str) -> dict:
         return {"error": str(e)}
 
 
+def sign_in_with_google(redirect_url: str) -> dict:
+    """Google OAuth 로그인 URL 생성"""
+    supabase = get_supabase()
+    if not supabase:
+        return {"error": "Supabase not configured"}
+
+    try:
+        response = supabase.auth.sign_in_with_oauth({
+            "provider": "google",
+            "options": {
+                "redirect_to": redirect_url,
+            }
+        })
+        return {"url": response.url}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def exchange_code_for_session(code: str) -> dict:
+    """OAuth 콜백 코드로 세션 교환"""
+    supabase = get_supabase()
+    if not supabase:
+        return {"error": "Supabase not configured"}
+
+    try:
+        response = supabase.auth.exchange_code_for_session({"auth_code": code})
+        return {"user": response.user, "session": response.session}
+    except Exception as e:
+        return {"error": str(e)}
+
+
 def sign_out() -> dict:
     """로그아웃"""
     supabase = get_supabase()

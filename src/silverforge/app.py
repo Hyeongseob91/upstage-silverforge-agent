@@ -192,6 +192,23 @@ def init_session_state():
         st.session_state.auth_mode = "login"
 
 
+def handle_oauth_callback():
+    """OAuth 콜백 처리 (URL에서 code 파라미터 확인)"""
+    query_params = st.query_params
+    code = query_params.get("code")
+
+    if code and not st.session_state.user:
+        result = db.exchange_code_for_session(code)
+        if "error" not in result:
+            st.session_state.user = result["user"]
+            st.session_state.access_token = result["session"].access_token
+            # URL에서 code 파라미터 제거
+            st.query_params.clear()
+            st.rerun()
+        else:
+            st.query_params.clear()
+
+
 def render_auth_page():
     """로그인/회원가입 페이지 - Notion Style"""
     # Notion-style CSS
@@ -430,6 +447,30 @@ def render_auth_page():
             """,
             unsafe_allow_html=True,
         )
+
+        # Google OAuth 버튼
+        if st.button("🔵 Google로 계속하기", use_container_width=True):
+            # 현재 앱 URL을 redirect_to로 사용
+            import streamlit.web.server.websocket_headers as ws_headers
+            try:
+                headers = ws_headers._get_websocket_headers()
+                host = headers.get("Host", "localhost:8501")
+                protocol = "https" if "streamlit.app" in host else "http"
+                redirect_url = f"{protocol}://{host}"
+            except Exception:
+                redirect_url = "https://upstage-silverforge-agent-yhuqpaatpux2pebsxntupw.streamlit.app"
+
+            result = db.sign_in_with_google(redirect_url)
+            if "url" in result:
+                st.markdown(
+                    f'<meta http-equiv="refresh" content="0;url={result["url"]}">',
+                    unsafe_allow_html=True,
+                )
+                st.stop()
+            else:
+                st.error(result.get("error", "Google 로그인 오류"))
+
+        st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
 
         if st.button("게스트로 계속하기", use_container_width=True):
             st.session_state.user = {"id": "guest", "email": "guest@local"}
@@ -1089,6 +1130,9 @@ def main():
 
     inject_custom_css()
     init_session_state()
+
+    # OAuth 콜백 처리
+    handle_oauth_callback()
 
     # Auth check
     if not st.session_state.user:
